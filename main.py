@@ -43,14 +43,13 @@ async def add_subreddit(ctx, subreddit):
 
 @client.command()
 async def remove_subreddit(ctx, subreddit):
-    if subreddit in [i for i in [*client.subreddits]]:
+    if subreddit in [*client.subreddits]:
         del client.subreddits[subreddit]
 
         await ctx.send(embed = discord.Embed(title="Succesfully removed item!", color=0x0066CC))
 
 @client.command()
 async def subreddits(ctx):
-
     subs = []
 
     for i in client.subreddits.keys():
@@ -60,10 +59,9 @@ async def subreddits(ctx):
     await ctx.send(embed=embed)
 
 async def request(subreddit):
-    
     headers = {
         "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36",
-        "referrer":f"https://www.reddit.com/r/{subreddit}"
+        "referer":f"https://www.reddit.com/r/{subreddit}"
     }
 
     url = f"https://www.reddit.com/r/{subreddit}/new.json"
@@ -72,7 +70,6 @@ async def request(subreddit):
 
 
 async def monitor(subreddit):
-
     try:
         res = await request(subreddit)
 
@@ -83,7 +80,6 @@ async def monitor(subreddit):
             try:
                 data = await res.json() # attempt to get the json response of the request 
                 last_post = data["data"]["children"][0]["data"]
-
             
             except:
                 raise Exception("Unable to retrieve JSON response!")
@@ -98,7 +94,6 @@ async def monitor(subreddit):
         return
 
 async def send_new_post(post):
-
     title = post["title"]
     link = post["url"]
     posted = post["created_utc"]
@@ -108,7 +103,6 @@ async def send_new_post(post):
     subreddit = post["subreddit"]
     hooks = os.getenv("WEBHOOK_LINK").split(' ')
 
-    
     embed = DiscordEmbed(title=title , url=post_link, color=0x0066CC)
     
     if selftext:
